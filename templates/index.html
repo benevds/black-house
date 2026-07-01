@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena Marina - Chatbot</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #e5ddd5; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .chat-container { width: 100%; max-width: 450px; height: 90vh; background-color: #ece5dd; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden; }
+        .chat-header { background-color: #075e54; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
+        
+        .message { max-width: 80%; padding: 10px 15px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
+        .message.bot { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 0; }
+        .message.user { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 0; }
+        
+        .chat-input { display: flex; padding: 10px; background-color: #f0f0f0; }
+        .chat-input input { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; font-size: 1rem; }
+        .chat-input button { background-color: #128c7e; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .chat-input button:hover { background-color: #075e54; }
+        
+        /* Indicador de digitando */
+        .typing { font-style: italic; color: #888; font-size: 0.85rem; display: none; align-self: flex-start; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">🏐 Arena Marina Bot</div>
+    
+    <div class="chat-messages" id="chatbox">
+        <div class="message bot">Olá! Sou o assistente da Arena Marina. Como posso te ajudar com as reservas de quadra hoje?</div>
+    </div>
+    <div class="typing" id="typing-indicator">O bot está digitando...</div>
+
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Digite sua mensagem..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+</div>
+
+<script>
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+    const typingIndicator = document.getElementById("typing-indicator");
+
+    function appendMessage(sender, text) {
+        const msgDiv = document.createElement("div");
+        msgDiv.classList.add("message", sender);
+        // Troca quebras de linha por <br> para manter a formatação do bot
+        msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+        chatbox.appendChild(msgDiv);
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        // 1. Mostra a mensagem do usuário
+        appendMessage("user", text);
+        userInput.value = "";
+        
+        // 2. Mostra indicador de carregamento
+        typingIndicator.style.display = "block";
+
+        try {
+            // 3. Envia para o backend Flask (nova rota /api/chat)
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mensagem: text })
+            });
+
+            const data = await response.json();
+            
+            // 4. Esconde o indicador e mostra a resposta do bot
+            typingIndicator.style.display = "none";
+            appendMessage("bot", data.resposta);
+
+        } catch (error) {
+            typingIndicator.style.display = "none";
+            appendMessage("bot", "⚠️ Erro de conexão com o servidor local.");
+            console.error(error);
+        }
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+</script>
+
+</body>
+</html>

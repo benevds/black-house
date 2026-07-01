@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Arena Black House — Painel da Recepção</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void: #0a0a0c;
+    --bg-surface: #141416;
+    --bg-raised: #1c1c1f;
+    --line: #2a2a2e;
+    --red: #ff1f3d;
+    --red-deep: #8c0f22;
+    --red-glow: rgba(255, 31, 61, 0.35);
+    --green: #2fd97f;
+    --ink: #f2f1ee;
+    --ink-dim: #8a8a8f;
+    --ink-faint: #55555a;
+    --font-display: 'Oswald', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a, button, input, select { font-family: inherit; }
+
+  :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+  /* ---------- Topbar ---------- */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 32px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--bg-surface), var(--bg-void));
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .logo-block { display: flex; flex-direction: column; }
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo span { color: var(--red); }
+  .logo-rule {
+    width: 46px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--red-deep));
+    margin-top: 6px;
+    border-radius: 2px;
+  }
+  .logo-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-top: 6px;
+  }
+  .clock-block { text-align: right; }
+  .clock {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-date {
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-transform: capitalize;
+    margin-top: 2px;
+  }
+
+  main { padding-bottom: 100px; }
+
+  /* ---------- Stat strip ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin: 24px 32px 0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .stat-tile { background: var(--bg-surface); padding: 18px 20px; }
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-value.accent { color: var(--red); }
+  .stat-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    color: var(--ink-dim);
+    margin-top: 8px;
+  }
+
+  /* ---------- Section headers ---------- */
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 36px 32px 14px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 19px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+  }
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: var(--red);
+    margin-right: 10px;
+    border-radius: 1px;
+  }
+  .section-controls { display: flex; align-items: center; gap: 10px; }
+  .section-controls label {
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  input[type="date"] {
+    color-scheme: dark;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: border-color .15s, color .15s;
+  }
+  .btn-ghost:hover { border-color: var(--red); color: var(--ink); }
+
+  /* ---------- Court grid (signature element) ---------- */
+  .court-grid-wrap {
+    margin: 0 32px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  .court-grid { display: grid; min-width: 560px; }
+  .court-grid .head-cell {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-dim);
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-surface);
+  }
+  .court-grid .time-cell {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-dim);
+    padding: 9px 10px;
+    text-align: right;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-void);
+    white-space: nowrap;
+  }
+  .court-grid .time-cell.now {
+    color: var(--red);
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--red);
+  }
+  .court-grid .slot-cell {
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    padding: 6px 8px;
+    min-height: 38px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background .15s, filter .15s;
+  }
+  .slot-cell.free { background: var(--bg-surface); }
+  .slot-cell.free:hover { background: var(--bg-raised); }
+  .slot-cell.free.now { box-shadow: inset 0 0 0 1px var(--red); }
+  .slot-cell.occupied {
+    background: linear-gradient(135deg, var(--red-deep), var(--red));
+  }
+  .slot-cell.occupied:hover { filter: brightness(1.12); }
+  .slot-cell .client-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .legend { display: flex; gap: 20px; margin: 14px 32px 0; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; font-size: 12px; color: var(--ink-dim); }
+  .dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 7px; }
+  .dot.free { background: var(--bg-surface); border: 1px solid var(--line); }
+  .dot.occupied { background: linear-gradient(135deg, var(--red-deep), var(--red)); }
+  .dot.now { background: transparent; border: 1px solid var(--red); }
+
+  /* ---------- Agenda table ---------- */
+  .agenda-wrap { margin: 0 32px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  thead th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--ink-dim);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+  }
+  tbody tr { transition: background .15s; }
+  tbody tr:hover { background: var(--bg-surface); }
+  td.mono, th.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid var(--red-deep);
+    color: var(--red);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .btn-cancel:hover { background: var(--red); color: #fff; }
+  .agenda-empty {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-dim);
+    font-size: 13.5px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    margin-top: 12px;
+  }
+
+  /* ---------- Floating action button ---------- */
+  .fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: linear-gradient(135deg, var(--red), var(--red-deep));
+    color: #fff;
+    border: none;
+    padding: 15px 24px;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 28px var(--red-glow);
+    transition: transform .15s;
+    z-index: 30;
+  }
+  .fab:hover { transform: translateY(-2px); }
+
+  /* ---------- Overlay + Drawers ---------- */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.6);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s;
+    z-index: 40;
+  }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: fixed;
+    top: 0; right: -420px;
+    width: 400px; max-width: 92vw;
+    height: 100%;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--line);
+    transition: right .25s ease;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -20px 0 40px rgba(0,0,0,.4);
+  }
+  .drawer.open { right: 0; }
+  .drawer-header {
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(135deg, var(--red-deep), var(--bg-void));
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .drawer-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .drawer-close {
+    background: none; border: none; color: var(--ink);
+    font-size: 20px; cursor: pointer; line-height: 1; padding: 4px;
+  }
+  .drawer-body { padding: 22px 24px; overflow-y: auto; flex: 1; }
+
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .field input, .field select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 14.5px;
+    padding: 8px 2px;
+    transition: border-color .15s;
+  }
+  .field select { color-scheme: dark; }
+  .field input:focus, .field select:focus {
+    border-color: var(--red);
+    outline: none;
+  }
+  .field-row { display: flex; gap: 14px; }
+  .field-row .field { flex: 1; }
+
+  .form-feedback {
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    margin: -6px 0 18px;
+    min-height: 16px;
+  }
+  .form-feedback.error { color: var(--red); }
+
+  .btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--red), var(--red-deep));
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 5px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .btn-submit:hover { filter: brightness(1.08); }
+  .btn-submit:disabled { opacity: .6; cursor: default; }
+
+  .detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+  }
+  .detail-row span { color: var(--ink-dim); }
+  .detail-row strong { color: var(--ink); font-weight: 600; }
+
+  .btn-cancel-full {
+    width: 100%;
+    margin-top: 22px;
+    background: transparent;
+    border: 1px solid var(--red-deep);
+    color: var(--red);
+    padding: 13px;
+    border-radius: 5px;
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .btn-cancel-full:hover, .btn-cancel-full.armed {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* ---------- Toasts ---------- */
+  .toast-container {
+    position: fixed; bottom: 24px; left: 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 100;
+  }
+  .toast {
+    background: var(--bg-raised);
+    border-left: 3px solid var(--red);
+    padding: 14px 18px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--ink);
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    min-width: 260px;
+    max-width: 340px;
+    transition: opacity .25s;
+  }
+  .toast.success { border-left-color: var(--green); }
+  .toast.error { border-left-color: var(--red); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 720px) {
+    .stats { grid-template-columns: repeat(2, 1fr); margin: 20px 16px 0; }
+    .section-head, .court-grid-wrap, .agenda-wrap, .legend { margin-left: 16px; margin-right: 16px; }
+    .topbar { padding: 18px 16px; }
+    .fab { right: 16px; bottom: 16px; padding: 13px 18px; font-size: 13px; }
+    .drawer { width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="logo-block">
+      <div class="logo">ARENA <span>BLACK HOUSE</span></div>
+      <div class="logo-rule"></div>
+      <div class="logo-sub">Painel da Recepção</div>
+    </div>
+    <div class="clock-block">
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="clock-date" id="clockDate">—</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats">
+      <div class="stat-tile">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Agendamentos no dia</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value" id="statReceita">R$ 0,00</div>
+        <div class="stat-label">Receita do dia</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value" id="statOcupacao">0%</div>
+        <div class="stat-label">Taxa de ocupação</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value accent" id="statProximaVaga">—</div>
+        <div class="stat-label">Próxima vaga livre</div>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <div class="section-title">Ocupação das Quadras</div>
+      <div class="section-controls">
+        <label for="dateInput">Data</label>
+        <input type="date" id="dateInput">
+        <button class="btn-ghost" id="refreshBtn">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="court-grid-wrap">
+      <div class="court-grid" id="courtGrid"></div>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="dot free"></span>Livre</span>
+      <span class="legend-item"><span class="dot occupied"></span>Ocupado</span>
+      <span class="legend-item"><span class="dot now"></span>Horário atual</span>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">Agendamentos do Dia</div>
+    </div>
+    <div class="agenda-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="mono">Horário</th>
+            <th>Quadra</th>
+            <th>Cliente</th>
+            <th class="mono">Telefone</th>
+            <th class="mono">Valor</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="agendaBody"></tbody>
+      </table>
+      <div class="agenda-empty" id="agendaEmpty">Nenhum agendamento neste dia ainda. Use "+ Novo Agendamento" para começar.</div>
+    </div>
+  </main>
+
+  <button class="fab" id="newBookingBtn">+ Novo Agendamento</button>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Drawer: novo agendamento -->
+  <aside class="drawer" id="drawer" aria-label="Novo agendamento">
+    <div class="drawer-header">
+      <div class="drawer-title">Novo Agendamento</div>
+      <button class="drawer-close" id="drawerClose" aria-label="Fechar">✕</button>
+    </div>
+    <div class="drawer-body">
+      <form id="bookingForm">
+        <div class="field">
+          <label for="formNome">Nome do cliente</label>
+          <input type="text" id="formNome" required>
+        </div>
+        <div class="field">
+          <label for="formTelefone">Telefone</label>
+          <input type="tel" id="formTelefone" placeholder="(11) 99999-9999" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="formData">Data</label>
+            <input type="date" id="formData" required>
+          </div>
+          <div class="field">
+            <label for="formHorario">Horário</label>
+            <select id="formHorario" required></select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="formQuadra">Quadra</label>
+          <select id="formQuadra" required></select>
+        </div>
+        <div class="form-feedback" id="formFeedback"></div>
+        <button type="submit" class="btn-submit" id="formSubmit">Confirmar Agendamento</button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Drawer: detalhes / cancelamento -->
+  <aside class="drawer" id="detailsDrawer" aria-label="Detalhes do agendamento">
+    <div class="drawer-header">
+      <div class="drawer-title">Detalhes do Agendamento</div>
+      <button class="drawer-close" id="detailsClose" aria-label="Fechar">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div id="detailsBody"></div>
+      <button class="btn-cancel-full" id="cancelConfirmBtn">Cancelar Agendamento</button>
+    </div>
+  </aside>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API = {
+    config: '/api/config',
+    agendamentos: '/api/agendamentos',
+    disponibilidade: '/api/disponibilidade',
+  };
+
+  let CONFIG = { quadras: [1, 2, 3, 4], horarios: [], preco_hora: 40 };
+  let currentDate = todayISO();
+  let agendamentosAtuais = [];
+
+  function todayISO() {
+    const d = new Date();
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  }
+
+  function fmtCurrency(v) {
+    return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+  function fmtPhone(p) {
+    if (!p) return '—';
+    return String(p).replace('whatsapp:', '');
+  }
+  function firstName(n) {
+    return (n || '').trim().split(' ')[0] || '?';
+  }
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s ?? '';
+    return div.innerHTML;
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('clockDate').textContent =
+      now.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+  }
+
+  async function loadConfig() {
+    try {
+      const res = await fetch(API.config);
+      if (!res.ok) throw new Error('config indisponível');
+      CONFIG = await res.json();
+    } catch (e) {
+      showToast('Não foi possível carregar as configurações da arena.', 'error');
+    }
+  }
+
+  async function loadAgendamentos(date) {
+    try {
+      const res = await fetch(`${API.agendamentos}?data=${encodeURIComponent(date)}`);
+      const data = await res.json();
+      agendamentosAtuais = data.agendamentos || [];
+    } catch (e) {
+      showToast('Erro ao buscar agendamentos.', 'error');
+      agendamentosAtuais = [];
+    }
+  }
+
+  async function refreshAll() {
+    await loadAgendamentos(currentDate);
+    renderStats();
+    renderGrid();
+    renderTable();
+  }
+
+  function computeNextFree() {
+    const isToday = currentDate === todayISO();
+    const nowHour = new Date().getHours();
+    const map = {};
+    agendamentosAtuais.forEach(a => { map[`${a.quadra}-${a.horario}`] = true; });
+    for (const h of CONFIG.horarios) {
+      const hourNum = Number(h.split(':')[0]);
+      if (isToday && hourNum < nowHour) continue;
+      for (const q of CONFIG.quadras) {
+        if (!map[`${q}-${h}`]) return `${h} · Q${q}`;
+      }
+    }
+    return '—';
+  }
+
+  function renderStats() {
+    const total = agendamentosAtuais.length;
+    const receita = agendamentosAtuais.reduce((s, a) => s + Number(a.valor || 0), 0);
+    const totalSlots = CONFIG.quadras.length * CONFIG.horarios.length;
+    const ocupacao = totalSlots ? Math.round((total / totalSlots) * 100) : 0;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statReceita').textContent = fmtCurrency(receita);
+    document.getElementById('statOcupacao').textContent = `${ocupacao}%`;
+    document.getElementById('statProximaVaga').textContent = computeNextFree();
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('courtGrid');
+    grid.style.gridTemplateColumns = `64px repeat(${CONFIG.quadras.length}, 1fr)`;
+    grid.innerHTML = '';
+
+    const headBlank = document.createElement('div');
+    headBlank.className = 'head-cell';
+    grid.appendChild(headBlank);
+    CONFIG.quadras.forEach(q => {
+      const h = document.createElement('div');
+      h.className = 'head-cell';
+      h.textContent = `Quadra ${q}`;
+      grid.appendChild(h);
+    });
+
+    const map = {};
+    agendamentosAtuais.forEach(a => { map[`${a.quadra}-${a.horario}`] = a; });
+
+    const isToday = currentDate === todayISO();
+    const nowHour = `${String(new Date().getHours()).padStart(2, '0')}:00`;
+
+    CONFIG.horarios.forEach(h => {
+      const timeCell = document.createElement('div');
+      timeCell.className = 'time-cell' + (isToday && h === nowHour ? ' now' : '');
+      timeCell.textContent = h;
+      grid.appendChild(timeCell);
+
+      CONFIG.quadras.forEach(q => {
+        const ag = map[`${q}-${h}`];
+        const cell = document.createElement('div');
+        cell.className = 'slot-cell ' + (ag ? 'occupied' : 'free') + (isToday && h === nowHour ? ' now' : '');
+        if (ag) {
+          cell.innerHTML = `<span class="client-tag">${escapeHtml(firstName(ag.cliente_nome))}</span>`;
+          cell.title = `${ag.cliente_nome} — ${fmtPhone(ag.cliente_telefone)} (clique para detalhes)`;
+          cell.addEventListener('click', () => openDetails(ag));
+        } else {
+          cell.title = 'Livre — clique para agendar';
+          cell.addEventListener('click', () => openBookingDrawer({ data: currentDate, horario: h, quadra: q }));
+        }
+        grid.appendChild(cell);
+      });
+    });
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('agendaBody');
+    const empty = document.getElementById('agendaEmpty');
+    tbody.innerHTML = '';
+
+    const sorted = [...agendamentosAtuais].sort(
+      (a, b) => a.horario.localeCompare(b.horario) || a.quadra - b.quadra
+    );
+
+    if (sorted.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    sorted.forEach(a => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="mono">${a.horario}</td>
+        <td>Quadra ${a.quadra}</td>
+        <td>${escapeHtml(a.cliente_nome)}</td>
+        <td class="mono">${escapeHtml(fmtPhone(a.cliente_telefone))}</td>
+        <td class="mono">${fmtCurrency(a.valor)}</td>
+        <td><button class="btn-cancel" data-id="${a.id}">Cancelar</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('.btn-cancel').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ag = agendamentosAtuais.find(x => String(x.id) === btn.dataset.id);
+        if (ag) openDetails(ag);
+      });
+    });
+  }
+
+  function buildHorarioOptions(selected) {
+    const sel = document.getElementById('formHorario');
+    sel.innerHTML = '';
+    CONFIG.horarios.forEach(h => {
+      const opt = document.createElement('option');
+      opt.value = h; opt.textContent = h;
+      if (h === selected) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function buildQuadraOptions(selected) {
+    const sel = document.getElementById('formQuadra');
+    sel.innerHTML = '';
+    CONFIG.quadras.forEach(q => {
+      const opt = document.createElement('option');
+      opt.value = q; opt.textContent = `Quadra ${q}`;
+      if (q === selected) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function checkAvailability() {
+    const data = document.getElementById('formData').value;
+    const horario = document.getElementById('formHorario').value;
+    const feedback = document.getElementById('formFeedback');
+    if (!data || !horario) return;
+
+    try {
+      const res = await fetch(`${API.disponibilidade}?data=${encodeURIComponent(data)}&horario=${encodeURIComponent(horario)}`);
+      const result = await res.json();
+      const livres = (result.disponibilidade && result.disponibilidade[horario]) || [];
+
+      Array.from(document.getElementById('formQuadra').options).forEach(opt => {
+        const q = Number(opt.value);
+        const disponivel = livres.includes(q);
+        opt.disabled = !disponivel;
+        opt.textContent = disponivel ? `Quadra ${q}` : `Quadra ${q} — ocupada`;
+      });
+
+      const quadraSel = document.getElementById('formQuadra');
+      if (quadraSel.options[quadraSel.selectedIndex]?.disabled && livres.length) {
+        quadraSel.value = livres[0];
+      }
+
+      if (livres.length === 0) {
+        feedback.textContent = 'Nenhuma quadra livre nesse horário.';
+        feedback.className = 'form-feedback error';
+      } else {
+        feedback.textContent = `${livres.length} quadra(s) livre(s) nesse horário.`;
+        feedback.className = 'form-feedback';
+      }
+    } catch (e) {
+      feedback.textContent = 'Não foi possível checar disponibilidade agora.';
+      feedback.className = 'form-feedback error';
+    }
+  }
+
+  function openDrawer(id) {
+    document.getElementById(id).classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+  function closeDrawers() {
+    document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+    document.getElementById('overlay').classList.remove('open');
+  }
+
+  function openBookingDrawer(prefill = {}) {
+    document.getElementById('bookingForm').reset();
+    document.getElementById('formData').value = prefill.data || currentDate;
+    buildHorarioOptions(prefill.horario);
+    buildQuadraOptions(prefill.quadra);
+    document.getElementById('formFeedback').textContent = '';
+    openDrawer('drawer');
+    checkAvailability();
+  }
+
+  function openDetails(ag) {
+    document.getElementById('detailsBody').innerHTML = `
+      <div class="detail-row"><span>Cliente</span><strong>${escapeHtml(ag.cliente_nome)}</strong></div>
+      <div class="detail-row"><span>Telefone</span><strong class="mono">${escapeHtml(fmtPhone(ag.cliente_telefone))}</strong></div>
+      <div class="detail-row"><span>Quadra</span><strong>Quadra ${ag.quadra}</strong></div>
+      <div class="detail-row"><span>Data</span><strong class="mono">${ag.data}</strong></div>
+      <div class="detail-row"><span>Horário</span><strong class="mono">${ag.horario}</strong></div>
+      <div class="detail-row"><span>Valor</span><strong class="mono">${fmtCurrency(ag.valor)}</strong></div>
+    `;
+    const cancelBtn = document.getElementById('cancelConfirmBtn');
+    cancelBtn.textContent = 'Cancelar Agendamento';
+    cancelBtn.classList.remove('armed');
+    cancelBtn.dataset.armed = 'false';
+    cancelBtn.onclick = () => {
+      if (cancelBtn.dataset.armed !== 'true') {
+        cancelBtn.dataset.armed = 'true';
+        cancelBtn.textContent = 'Confirmar cancelamento?';
+        cancelBtn.classList.add('armed');
+      } else {
+        cancelBooking(ag.id);
+      }
+    };
+    openDrawer('detailsDrawer');
+  }
+
+  async function cancelBooking(id) {
+    try {
+      const res = await fetch(`${API.agendamentos}/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.sucesso) {
+        showToast('Agendamento cancelado.', 'success');
+        closeDrawers();
+        await refreshAll();
+      } else {
+        showToast(data.erro || 'Não foi possível cancelar.', 'error');
+      }
+    } catch (e) {
+      showToast('Erro de conexão ao cancelar.', 'error');
+    }
+  }
+
+  async function submitBooking(e) {
+    e.preventDefault();
+    const payload = {
+      cliente_nome: document.getElementById('formNome').value.trim(),
+      cliente_telefone: document.getElementById('formTelefone').value.trim(),
+      data: document.getElementById('formData').value,
+      horario: document.getElementById('formHorario').value,
+      quadra: Number(document.getElementById('formQuadra').value),
+    };
+    if (!payload.cliente_nome || !payload.cliente_telefone) {
+      showToast('Preencha nome e telefone do cliente.', 'error');
+      return;
+    }
+
+    const submitBtn = document.getElementById('formSubmit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Salvando...';
+
+    try {
+      const res = await fetch(API.agendamentos, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.sucesso) {
+        showToast(`Agendamento confirmado — Quadra ${data.quadra} às ${data.horario}.`, 'success');
+        closeDrawers();
+        if (payload.data === currentDate) await refreshAll();
+      } else {
+        showToast(data.erro || 'Não foi possível salvar o agendamento.', 'error');
+        checkAvailability();
+      }
+    } catch (e) {
+      showToast('Erro de conexão ao salvar agendamento.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirmar Agendamento';
+    }
+  }
+
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 250);
+    }, 3800);
+  }
+
+  function bindEvents() {
+    document.getElementById('newBookingBtn').addEventListener('click', () => openBookingDrawer({ data: currentDate }));
+    document.getElementById('drawerClose').addEventListener('click', closeDrawers);
+    document.getElementById('detailsClose').addEventListener('click', closeDrawers);
+    document.getElementById('overlay').addEventListener('click', closeDrawers);
+    document.getElementById('bookingForm').addEventListener('submit', submitBooking);
+    document.getElementById('formData').addEventListener('change', checkAvailability);
+    document.getElementById('formHorario').addEventListener('change', checkAvailability);
+    document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+    document.getElementById('dateInput').addEventListener('change', async (e) => {
+      currentDate = e.target.value;
+      await refreshAll();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawers(); });
+  }
+
+  async function init() {
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    await loadConfig();
+
+    document.getElementById('dateInput').value = currentDate;
+    document.getElementById('formData').min = todayISO();
+
+    bindEvents();
+    await refreshAll();
+
+    // Atualização periódica: mantém o painel sincronizado com reservas
+    // feitas pelo bot do WhatsApp enquanto a página fica aberta.
+    setInterval(refreshAll, 25000);
+  }
+
+  init();
+</script>
+</body>
+</html>
