@@ -1,6 +1,10 @@
-.env
-*.db
-__pycache__/
-*.pyc
+# Ignorar ambiente virtual e dependências
 .venv/
-venv/
+__pycache__/
+
+# Ignorar variáveis de ambiente (ISSO É CRÍTICO!)
+.env
+
+# Ignorar banco de dados SQLite (para não sobreescrever os dados em produção)
+*.db
+arena_marina.db
